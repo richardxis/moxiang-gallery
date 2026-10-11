@@ -1,0 +1,55 @@
+# Example only: merge with existing local configuration; do not overwrite it.
+# JARs exclude private profiles. Explicitly load your external local file.
+# Keep actual credentials in environment variables or ignored private files, never Git.
+spring:
+  redis:
+    # 【可选待填】启用缓存才需要；默认主机/端口不是已验证的连接。
+    host: ${MOXIANG_REDIS_HOST:localhost}
+    port: ${MOXIANG_REDIS_PORT:6379}
+    password: ${MOXIANG_REDIS_PASSWORD:}
+    timeout: 500ms
+    connect-timeout: 500ms
+  datasource:
+    # 【必填/确认】自己的 MySQL 地址、账号、密码；先在测试库执行迁移。
+    url: ${MOXIANG_DB_URL:jdbc:mysql://localhost:3306/yu_picture}
+    username: ${MOXIANG_DB_USER:root}
+    password: ${MOXIANG_DB_PASSWORD:}
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+cos:
+  client:
+    # 【必填/确认】自己的 COS 域名、SecretId、SecretKey、地域、桶名。
+    # 【隐私边界】公开读桶不因 spaceId 自动变私有；生产需私有桶/授权 URL。
+    host: ${MOXIANG_COS_HOST:}
+    secret-id: ${MOXIANG_COS_SECRET_ID:}
+    secret-key: ${MOXIANG_COS_SECRET_KEY:}
+    region: ${MOXIANG_COS_REGION:}
+    bucket: ${MOXIANG_COS_BUCKET:}
+picture:
+  cleanup:
+    # 精确对象补偿清理；上线先检查任务表，禁止盲目删除整个 COS 前缀。
+    enabled: ${MOXIANG_CLEANUP_ENABLED:true}
+    retire-delay-seconds: ${MOXIANG_CLEANUP_RETIRE_DELAY_SECONDS:60}
+  web:
+    # 【确认】精确前端 Origin，含协议和端口，不含路径；多个用逗号分隔。
+    allowed-origins: ${MOXIANG_FRONTEND_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  ai:
+    # 【可选待填】自己的北京地域百炼 Key；有费用，默认关闭。
+    enabled: ${MOXIANG_AI_ENABLED:false}
+    api-key: ${MOXIANG_AI_API_KEY:}
+    base-url: ${MOXIANG_AI_BASE_URL:https://dashscope.aliyuncs.com}
+    connect-timeout-millis: 3000
+    read-timeout-millis: 10000
+  cache:
+    namespace: ${MOXIANG_CACHE_NAMESPACE:moxiang:picture:local}
+    mode: ${MOXIANG_CACHE_MODE:MULTILEVEL}
+    redis-enabled: ${MOXIANG_REDIS_ENABLED:false}
+    maximum-size: 10000
+    local-ttl-seconds: 300
+    redis-ttl-seconds: 300
+    jitter-seconds: 300
+  remote:
+    # 精确域名，逗号分隔；空值关闭远程导入。Bing 缩略图实际来源常为 th.bing.com。
+    allowed-hosts: ${MOXIANG_REMOTE_ALLOWED_HOSTS:}

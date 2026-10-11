@@ -1,0 +1,31 @@
+# Build artifacts and dependencies
+**/target/
+**/node_modules/
+**/dist/
+**/coverage/
+*.tsbuildinfo
+# Real credentials / private runtime data
+**/application-*.yml
+**/application-*.yaml
+**/application-*.properties
+!**/application-*.example.yml
+!**/application-*.example.yaml
+!**/application-*.example.properties
+**/.env
+**/.env.*
+!**/.env.example
+**/private/
+**/secrets/
+**/backups/
+*.pem
+*.key
+*.p12
+*.jks
+*.log
+*.dump
+*.sql.gz
+# IDE and OS
+**/.idea/
+**/.vscode/
+.DS_Store
+*.iml

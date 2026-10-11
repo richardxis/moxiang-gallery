@@ -1,0 +1,73 @@
+# Public defaults contain no real credentials. Load an external local configuration
+# or provide MOXIANG_* environment variables. Private profiles are excluded from JARs.
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: moxiang-picture-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MOXIANG_DB_URL:jdbc:mysql://localhost:3306/yu_picture}
+    username: ${MOXIANG_DB_USER:root}
+    password: ${MOXIANG_DB_PASSWORD:}
+  redis:
+    host: ${MOXIANG_REDIS_HOST:localhost}
+    port: ${MOXIANG_REDIS_PORT:6379}
+    password: ${MOXIANG_REDIS_PASSWORD:}
+    timeout: 500ms
+    connect-timeout: 500ms
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+mybatis-plus:
+  mapper-locations: classpath*:generator/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  global-config:
+    db-config:
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+knife4j:
+  enable: ${MOXIANG_API_DOCS_ENABLED:false}
+  openapi:
+    title: 墨象协同云图库接口
+    version: 1.0
+    group:
+      default:
+        api-rule: package
+        api-rule-resources:
+          - com.moxiang.picture.controller
+cos:
+  client:
+    host: ${MOXIANG_COS_HOST:}
+    secret-id: ${MOXIANG_COS_SECRET_ID:}
+    secret-key: ${MOXIANG_COS_SECRET_KEY:}
+    region: ${MOXIANG_COS_REGION:}
+    bucket: ${MOXIANG_COS_BUCKET:}
+picture:
+  web:
+    allowed-origins: ${MOXIANG_FRONTEND_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  cache:
+    namespace: ${MOXIANG_CACHE_NAMESPACE:moxiang:picture:local}
+    mode: ${MOXIANG_CACHE_MODE:MULTILEVEL}
+    redis-enabled: ${MOXIANG_REDIS_ENABLED:false}
+    maximum-size: 10000
+    local-ttl-seconds: 300
+    redis-ttl-seconds: 300
+    jitter-seconds: 300
+  ai:
+    enabled: ${MOXIANG_AI_ENABLED:false}
+    api-key: ${MOXIANG_AI_API_KEY:}
+    base-url: ${MOXIANG_AI_BASE_URL:https://dashscope.aliyuncs.com}
+    connect-timeout-millis: 3000
+    read-timeout-millis: 10000
+  remote:
+    allowed-hosts: ${MOXIANG_REMOTE_ALLOWED_HOSTS:}
+  cleanup:
+    enabled: ${MOXIANG_CLEANUP_ENABLED:true}
+    retire-delay-seconds: ${MOXIANG_CLEANUP_RETIRE_DELAY_SECONDS:60}
