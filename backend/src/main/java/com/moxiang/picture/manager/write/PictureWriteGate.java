@@ -17,6 +17,14 @@ public class PictureWriteGate {
     public PictureWriteGate(){for(int i=0;i<stripes.length;i++)stripes[i]=new ReentrantLock(true);}
     private ReentrantLock lock(Long id){if(id==null||id<=0)throw new BusinessException(ErrorCode.PARAMS_ERROR);return stripes[(id.hashCode()&Integer.MAX_VALUE)%stripes.length];}
     public <T>T with(Long id,Supplier<T> work){ReentrantLock l=lock(id);l.lock();try{return work.get();}finally{l.unlock();}}
+    /** Acquire unique stripes in a global order, before taking any database locks. */
+    public <T>T withMany(java.util.Collection<Long> ids,Supplier<T> work){
+        java.util.SortedSet<Integer> indexes=new java.util.TreeSet<>();
+        for(Long id:ids){lock(id);indexes.add((id.hashCode()&Integer.MAX_VALUE)%stripes.length);}
+        java.util.List<ReentrantLock> acquired=new java.util.ArrayList<>();
+        try{for(Integer index:indexes){ReentrantLock stripe=stripes[index];stripe.lock();acquired.add(stripe);}return work.get();}
+        finally{for(int i=acquired.size()-1;i>=0;i--)acquired.get(i).unlock();}
+    }
     public void withIo(Long id,IoWork work)throws IOException{ReentrantLock l=lock(id);l.lock();try{work.run();}finally{l.unlock();}}
     public interface IoWork{void run()throws IOException;}
     public interface Fence{

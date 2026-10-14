@@ -16,7 +16,10 @@ public enum ErrorCode {
     OPERATION_ERROR(50001, "操作失败"),
     AI_DISABLED(50301, "AI 功能未启用"),
     AI_UPSTREAM_ERROR(50201, "AI 服务异常"),
-    AI_TIMEOUT(50401, "AI 服务超时");
+    AI_TIMEOUT(50401, "AI 服务超时"),
+    IMAGE_SEARCH_DISABLED(50311, "以图搜图未启用"),
+    IMAGE_SEARCH_UPSTREAM(50211, "以图搜图上游异常"),
+    IMAGE_SEARCH_TIMEOUT(50411, "以图搜图超时");
 
     /**
      * 状态码

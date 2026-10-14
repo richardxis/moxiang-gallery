@@ -1,5 +1,6 @@
 <template>
   <div id="homePage">
+    <ColorSearchPanel v-if="login.loginUser.id" />
     <!-- 搜索框 -->
     <div class="search-bar">
       <a-input-search
@@ -76,6 +77,9 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { listPictureTagCategoryUsingGet, listPictureVoByPageWithCacheUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import ColorSearchPanel from '@/components/ColorSearchPanel.vue'
+import { useLoginUserStore } from '@/stores/userLoginUserStore'
+const login = useLoginUserStore()
 
 const dataList = ref<API.PictureVO[]>([])
 const total = ref(0)

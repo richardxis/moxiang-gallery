@@ -52,6 +52,8 @@
           </a-descriptions>
           <!-- 图片操作 -->
           <a-space wrap>
+            <ShareModal :picture-id="picture.id" :private-picture="!!picture.spaceId" />
+            <a-button v-if="loginUserStore.loginUser.id && picture.id && !picture.spaceId" @click="router.push({ path: '/search_picture', query: { pictureId: String(picture.id) } })">以图搜图</a-button>
             <a-button type="primary" @click="doDownload">
               免费下载
               <template #icon>
@@ -96,6 +98,7 @@ import router from '@/router'
 import { useLoginUserStore } from '@/stores/userLoginUserStore.ts'
 import OutPaintingPanel from '@/components/OutPaintingPanel.vue'
 import CollaborativePreview from '@/components/CollaborativeEditor.vue'
+import ShareModal from '@/components/ShareModal.vue'
 import { getSpaceById, getSpacePermissions } from '@/api/space'
 
 const props = defineProps<{

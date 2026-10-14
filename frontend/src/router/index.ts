@@ -14,6 +14,9 @@ import TeamSpacePage from '@/pages/TeamSpacePage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: '/search_picture', name: '以图搜图', component: () => import('@/pages/SearchPicturePage.vue') },
+    { path: '/space_analyze', name: '空间分析', component: () => import('@/pages/SpaceAnalyzePage.vue') },
+    { path: '/admin/spaceAnalyze', redirect: { path: '/space_analyze', query: { queryAll: 'true' } } },
     { path: '/team_space', name: '团队空间', component: TeamSpacePage },
     { path: '/my_space', name: '我的空间', component: MySpacePage },
     { path: '/admin/pictureBatch', name: '批量导入', component: AddPictureBatchPage },

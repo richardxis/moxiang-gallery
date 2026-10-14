@@ -18,7 +18,7 @@ router.beforeEach(async (to, from, next) => {
     firstFetchLoginUser = false;
   }
   const toUrl = to.fullPath
-  if (['/my_space', '/team_space', '/add_picture'].includes(to.path) && !loginUser.id) {
+  if (['/my_space', '/team_space', '/add_picture', '/space_analyze', '/search_picture'].includes(to.path) && !loginUser.id) {
     next(`/user/login?redirect=${encodeURIComponent(to.fullPath)}`)
     return
   }

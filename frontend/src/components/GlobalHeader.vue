@@ -23,7 +23,7 @@
             <a-dropdown>
               <ASpace>
                 <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-                {{ loginUserStore.loginUser.userName ?? '无名' }}
+                <span class="user-name">{{ loginUserStore.loginUser.userName ?? '无名' }}</span>
               </ASpace>
               <template #overlay>
                 <a-menu>
@@ -79,6 +79,7 @@ const originItems = [
     title: '图片管理',
   },
   { key: '/admin/pictureBatch', label: '批量导入', title: '批量导入' },
+  { key: '/admin/spaceAnalyze', label: '图库分析', title: '图库分析' },
   { key: '/my_space', label: '我的空间', title: '我的空间' },
   { key: '/team_space', label: '团队空间', title: '团队空间' },
 ]
@@ -142,5 +143,13 @@ const doLogout = async () => {
 .logo {
   height: 48px;
   width: 40px;
+}
+.user-name {
+  display: inline-block;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 </style>

@@ -1,7 +1,5 @@
-# 来源与发布说明
+# 致谢
 
-本项目参考智能协同云图库，原型的衍生实现与测试补全。
+部分功能实现参考「智能协同云图库」（作者：程序员鱼皮）。对应源码中的作者与版权声明予以保留。
 
-首页参考原型“场景—模块—技术栈—运行方式”的组织方式
-
-公开可见不等于无限制开源许可，参见 [GitHub 许可说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)。
+项目使用的框架、SDK 与前端组件遵循各自许可证。

@@ -3,6 +3,7 @@
     <!-- 搜索栏 --->
     <a-flex justify="space-between">
       <h2>图片管理</h2>
+      <BatchEditPictureModal :pictures="selectedPictures" @saved="fetchData" />
       <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
     </a-flex>
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
@@ -36,6 +37,8 @@
 
     <!-- 表格 --->
     <a-table
+      :row-key="rowKey"
+      :row-selection="{ selectedRowKeys: selectedIds, onChange: selectRows, getCheckboxProps: checkboxProps }"
       :columns="columns"
       :data-source="dataList"
       :pagination="pagination"
@@ -90,6 +93,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
 import {
   deletePictureUsingPost,
   doPictureReviewUsingPost,
@@ -152,6 +156,11 @@ const columns = [
 
 // 数据
 const dataList = ref<API.Picture[]>([])
+const selectedIds = ref<(string | number)[]>([])
+const selectedPictures = computed(() => dataList.value.filter(picture => selectedIds.value.includes(String(picture.id))))
+const selectRows = (keys: (string | number)[]) => { selectedIds.value = keys }
+const rowKey = (record: API.Picture) => String(record.id)
+const checkboxProps = (record: API.Picture) => ({ disabled: record.spaceId != null })
 const reviewOpen = ref(false)
 const reviewLoading = ref(false)
 const reviewForm = reactive<API.PictureReviewRequest>({ reviewStatus: 1, reviewMessage: '' })
@@ -202,6 +211,7 @@ const pagination = computed(() => {
 
 // 获取数据
 const fetchData = async () => {
+  selectedIds.value = []
   const res = await listPictureByPageUsingPost({
     ...searchParams,
   })

@@ -68,6 +68,10 @@ picture:
     read-timeout-millis: 10000
   remote:
     allowed-hosts: ${MOXIANG_REMOTE_ALLOWED_HOSTS:}
+  image-search:
+    enabled: ${MOXIANG_IMAGE_SEARCH_ENABLED:false}
+    connect-timeout-millis: 3000
+    read-timeout-millis: 5000
   cleanup:
     enabled: ${MOXIANG_CLEANUP_ENABLED:true}
     retire-delay-seconds: ${MOXIANG_CLEANUP_RETIRE_DELAY_SECONDS:60}

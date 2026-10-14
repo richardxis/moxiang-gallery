@@ -1,26 +1,24 @@
 # 墨象协同云图库 · 后端
 
-Spring Boot 2.7.6 后端，提供用户、图片、空间、缓存、实时协作与可选 AI 扩图能力。完整产品介绍见 [项目首页](../README.md)。
+Spring Boot 服务提供用户、图片、空间权限、公共缓存、实时协作、图片搜索、批量编辑、空间分析与异步扩图接口。
 
-## 启动前
-
-准备 MySQL 和 COS/数据万象；Redis 由开关决定。按 [安装说明](../docs/SETUP.md) 核对建表与迁移，并以环境变量或外部私有配置提供凭据。
+## 构建与运行
 
 ```powershell
 mvn '-Dtest=*BoundaryTest' package
 powershell -NoProfile -ExecutionPolicy Bypass -File .\release\check-release.ps1 -SkipGitIndex
-powershell -NoProfile -ExecutionPolicy Bypass -File .\release\start-local.ps1 -ConfigFile '自己的完整路径\application-local.yml'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\release\start-local.ps1 -ConfigFile '.\config\application-local.yml'
 ```
 
-发布审查时使用 `check-release.ps1 -ForPublication -FrontendRoot '..\frontend'`；不能跳过 Git 索引，也不能把找不到索引当成安全通过。脚本识别后端独立仓库和 backend/frontend 根仓库布局。
+配置项与数据库步骤见 [安装说明](../docs/SETUP.md)，接口说明见 [功能文档](../docs/FEATURES.md)。
 
-## 重要边界
+## 关键机制
 
-- HttpSession、协作房间和编辑锁为单实例；Redis 缓存不等于分布式会话。
-- 普通图片修改和协作保存都校验 expectedRevision；重试保留稳定 requestId。
-- 云对象上传不参与 MySQL 事务，使用精确对象清理任务补偿；不按整个前缀盲删。
-- public 基础配置无真实凭据。JAR 排除所有 profile，IDE 可用 target/classes local，但不能把整个 target 作为发布包。
-- COS 缺配置时启动报出所需变量名，不输出 SecretId/SecretKey；不自动 Mock 云连接。
-- 密码保留旧原型兼容逻辑，正式开放前需要迁移方案；API 鉴权不替代私有对象存储策略。
+- Sa-Token 校验空间权限，HttpSession 维护登录。
+- 公共分页缓存使用条件摘要、共享版本与随机 TTL。
+- 普通编辑、批量编辑及协作保存共享图片写入门控。
+- expectedRevision 校验并发修改，requestId 登记协作保存结果。
+- 云对象通过清理任务处理失败补偿和旧对象回收。
+- 真实配置通过外部文件或环境变量加载，发布 JAR 排除私有 profile。
 
-测试范围与未实现能力详见 [验证说明](../docs/VALIDATION.md)、[限制](../docs/LIMITATIONS.md) 和 [架构](../docs/ARCHITECTURE.md)。
+[架构](../docs/ARCHITECTURE.md) · [测试](../docs/VALIDATION.md) · [部署约束](../docs/LIMITATIONS.md)

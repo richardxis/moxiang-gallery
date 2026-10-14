@@ -1,22 +1,23 @@
 # 墨象协同云图库 · 前端
 
-Vue 3 + TypeScript + Vite + Pinia + Ant Design Vue。后端位于相邻的 backend 目录，业务介绍见 [项目首页](../README.md)。
+基于 Vue 3、TypeScript、Vite、Ant Design Vue 与 Pinia，提供公共图库、个人/团队空间、图片编辑、搜索、分享和分析页面。
+
+## 开发
 
 ```powershell
 npm ci
-if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
+Copy-Item .env.example .env.local
 npm run dev
 ```
 
-后端默认 Origin 为 http://localhost:8123，`.env.local` 的 VITE_API_BASE_URL 不再追加 /api。前后端保持同一主机名；Cookie、HTTP CORS 和 WebSocket Origin 都需匹配。不要把任何服务端秘密填进 VITE_*。
+`VITE_API_BASE_URL` 默认填 `http://localhost:8123`，不附加 `/api`。前后端使用相同主机名，按 [安装说明](../docs/SETUP.md) 配置 Cookie 与 Origin。
+
+## 构建
 
 ```powershell
-npm run type-check
 npm run build
 ```
 
-使用墨象标识和中文页面元信息；Vue DevTools 只在开发 serve 模式启用。dist 是静态产物，不意味着业务服务已部署。
+Vite 将结果输出到 dist。部署时配置前端路由回退与 WebSocket 转发。
 
-协作使用图片级排他锁，广播旋转/缩放，裁剪在本地预览后提交；不是多用户同时编辑任意像素的 PS。修改现有图片携带 expectedRevision，保存未知结果保持同一 requestId 查询或重试。
-
-完整配置、生产反向代理要求与限制见 [安装说明](../docs/SETUP.md) 和 [能力边界](../docs/LIMITATIONS.md)。
+主要入口：公共图库、我的空间、团队空间、图片详情、以图搜图、空间分析和管理员图片表格。图片详情提供链接复制与分享二维码，空间列表支持主色搜索及批量编辑。

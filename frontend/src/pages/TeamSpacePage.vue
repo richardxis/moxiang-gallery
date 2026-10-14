@@ -15,11 +15,14 @@
       <p>图片 {{ space.totalCount }} / {{ space.maxCount }}；{{ formatSize(Number(space.totalSize)) }} / {{ formatSize(Number(space.maxSize)) }}</p>
       <a-space wrap>
         <a-button v-if="permissions.includes('picture:upload')" type="primary" @click="upload">上传图片</a-button>
+        <ColorSearchPanel :space-id="space.id" />
+        <BatchEditPictureModal v-if="permissions.includes('picture:edit')" :pictures="selectedPictures" :space-id="space.id" @saved="loadPictures" />
+        <a-button v-if="permissions.includes('spaceUser:manage')" @click="router.push({ path: '/space_analyze', query: { spaceId: String(space.id) } })">空间分析</a-button>
         <a-input-search v-model:value="searchText" placeholder="搜索团队图片" @search="search" />
         <a-button @click="refresh">刷新权限与图片</a-button>
       </a-space>
       <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }" :data-source="pictures" style="margin-top: 16px">
-        <template #renderItem="{ item }"><a-list-item><a-card hoverable @click="router.push('/picture/' + item.id)">
+        <template #renderItem="{ item }"><a-list-item><a-checkbox v-if="permissions.includes('picture:edit')" :checked="selectedIds.includes(String(item.id))" @change="toggle(String(item.id))">选择</a-checkbox><a-card hoverable @click="router.push('/picture/' + item.id)">
           <template #cover><img :src="item.thumbnailUrl || item.url" :alt="item.name" loading="lazy" style="height: 160px; object-fit: cover" /></template>
           <a-card-meta :title="item.name" />
         </a-card></a-list-item></template>
@@ -44,7 +47,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import ColorSearchPanel from '@/components/ColorSearchPanel.vue'
+import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { createTeamSpace, getSpaceById, getSpacePermissions, listTeamSpaces, listSpaceMembers, mutateSpaceMember, type Space, type SpaceMember } from '@/api/space'
@@ -53,11 +58,14 @@ import { formatSize } from '@/utils'
 const router = useRouter()
 const teams = ref<Space[]>([]), teamPage = ref(1), teamTotal = ref(0), name = ref('墨象团队'), creating = ref(false)
 const space = ref<Space>(), permissions = ref<string[]>([]), pictures = ref<API.PictureVO[]>([])
+const selectedIds = ref<string[]>([])
+const selectedPictures = computed(() => pictures.value.filter(picture => selectedIds.value.includes(String(picture.id))))
+function toggle(id: string) { selectedIds.value = selectedIds.value.includes(id) ? selectedIds.value.filter(value => value !== id) : [...selectedIds.value, id] }
 const picturePage = ref(1), pictureTotal = ref(0), searchText = ref('')
 const members = ref<SpaceMember[]>([]), memberPage = ref(1), memberTotal = ref(0), memberId = ref(''), role = ref('viewer'), mutating = ref(false)
 const roles = ['viewer', 'editor', 'admin'].map(value => ({ label: value, value }))
 let scopeVersion = 0, pictureVersion = 0, memberVersion = 0, teamVersion = 0
-function clearScope() { scopeVersion++; pictureVersion++; memberVersion++; space.value = undefined; permissions.value = []; pictures.value = []; members.value = [] }
+function clearScope() { scopeVersion++; pictureVersion++; memberVersion++; selectedIds.value = []; space.value = undefined; permissions.value = []; pictures.value = []; members.value = [] }
 async function loadTeams() {
   const version = ++teamVersion
   try { const res = await listTeamSpaces(teamPage.value); if (version !== teamVersion) return
@@ -79,6 +87,7 @@ async function select(item: Space) {
 async function loadPictures() {
   if (!space.value) return
   const version = ++pictureVersion
+  selectedIds.value = []
   try { const res = await listPictureVoByPageUsingPost({ spaceId: space.value.id, current: picturePage.value, pageSize: 12, searchText: searchText.value })
     if (version !== pictureVersion) return
     if (res.data.code !== 0) throw new Error('查询失败')
